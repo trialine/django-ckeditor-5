@@ -48,6 +48,7 @@ import {HtmlEmbed} from "@ckeditor/ckeditor5-html-embed";
 import { FullPage } from '@ckeditor/ckeditor5-html-support';
 import { SpecialCharacters } from '@ckeditor/ckeditor5-special-characters';
 import { SpecialCharactersEssentials } from '@ckeditor/ckeditor5-special-characters';
+import Template from './plugins/template';
 
 export default class ClassicEditor extends ClassicEditorBase {
 }
@@ -101,4 +102,5 @@ ClassicEditor.builtinPlugins = [
     FullPage,
     SpecialCharacters,
     SpecialCharactersEssentials,
+    Template
 ];
