@@ -43,6 +43,7 @@
     "@ckeditor/ckeditor5-theme-lark": "^41.3.1",
     "@ckeditor/ckeditor5-ui": "^41.3.1",
     "@ckeditor/ckeditor5-upload": "^41.3.1",
+    "@ckeditor/ckeditor5-widget": "^41.3.1",
     "@ckeditor/ckeditor5-word-count": "^41.3.1"
   },
   "devDependencies": {

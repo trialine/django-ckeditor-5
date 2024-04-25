@@ -102,5 +102,5 @@ ClassicEditor.builtinPlugins = [
     FullPage,
     SpecialCharacters,
     SpecialCharactersEssentials,
-    Template
+    Template,
 ];
