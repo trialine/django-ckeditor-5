@@ -129,8 +129,29 @@ Quick start
        # [ ... ]
        
        urlpatterns += [ 
-           path("ckeditor5/", include('django_ckeditor_5.urls'), name="ck_editor_5_upload_file"),
+           path("ckeditor5/", include('django_ckeditor_5.urls')),
        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+  Alternatively, you can use your own logic for file uploads. To do this, add the following to your `settings.py` file:
+
+  .. code-block:: python
+
+    # Define a constant in settings.py to specify the custom upload file view
+    CK_EDITOR_5_UPLOAD_FILE_VIEW_NAME = "custom_upload_file"
+
+  Then, in your `urls.py`, include the custom upload URL pattern:
+
+  .. code-block:: python
+
+     path("upload/", custom_upload_function, name="custom_upload_file"),
+
+This allows users to customize the upload file logic by specifying their own view function and URL pattern.
+
+
+
+
+
+
     
     
 4. Add to your `project/models.py`:
@@ -194,7 +215,12 @@ Includes the following ckeditor5 plugins:
             Style,
             HorizontalLine,
             LinkImage,
-            HtmlEmbed
+            HtmlEmbed,
+            FullPage,
+            SpecialCharacters,
+            ShowBlocks,
+            SelectAll,
+            FindAndReplace
 
 
 Examples
@@ -283,6 +309,80 @@ If you want the language to change with the user language in django
 you can add ``CKEDITOR_5_USER_LANGUAGE=True`` to your django settings.
 Additionally you will have to list all available languages in the ckeditor
 config as shown above.
+
+Creating a CKEditor5 instance from javascript:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To create a ckeditor5 instance dynamically from javascript you can use the
+``ClassicEditor`` class exposed through the ``window`` global variable.
+
+  .. code-block:: javascript
+
+    const config = {};
+    window.ClassicEditor
+       .create( document.querySelector( '#editor' ), config )
+       .catch( error => {
+           console.error( error );
+       } );
+    }
+
+Alternatively, you can create a form with the following structure:
+
+  .. code-block:: html
+
+    <form method="POST">
+        <div class="ck-editor-container">
+            <textarea id="id_text" name="text" class="django_ckeditor_5" >
+            </textarea>
+            <div></div> <!-- this div or any empty element is required -->
+            <span class="word-count" id="id_text_script-word-count"></span>
+       </div>
+       <input type="hidden" id="id_text_script-ck-editor-5-upload-url" data-upload-url="/ckeditor5/image_upload/" data-csrf_cookie_name="new_csrf_cookie_name">
+       <span id="id_text_script-span"><script id="id_text_script" type="application/json">{your ckeditor config}</script></span>
+    </form>
+
+The ckeditor will be automatically created once the form has been added to the
+DOM.
+
+To access a ckeditor instance you can either get them through ``window.editors``
+
+  .. code-block:: javascript
+
+    const editor = windows.editors["<id of your field>"];
+
+or by registering a callback
+
+  .. code-block:: javascript
+
+    //register callback
+    window.ckeditorRegisterCallback("<id of your field>", function(editor) {
+      // do something with editor
+    });
+    // unregister callback
+    window.ckeditorUnregisterCallback("<id of your field>");
+
+
+Allow file uploading as link:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+By default only images can be uploaded and embedded in the content. To allow
+uploading and embedding files as downloadable links you can add the following
+to your config:
+
+ .. code-block:: python
+
+      CKEDITOR_5_ALLOW_ALL_FILE_TYPES = True
+      CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'pdf', 'png'] # optional
+      CKEDITOR_5_CONFIGS = {
+        'default': {
+            'toolbar': ['heading', '|', 'bold', 'italic', 'link',
+                        'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'fileUpload' ], # include fileUpload here
+            'language': 'de',
+        },
+
+**Warning**: Uploaded files are not validated and users could upload malicious
+content (e.g. a pdf which actually is an executable). Furthermore allowing file
+uploads disables any validation for the image upload as the backend can't
+distinguish between image and file upload. Exposing the file upload to
+all/untrusted users poses a risk!
 
 
 Installing from GitHub:
